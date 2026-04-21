@@ -3,8 +3,16 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: '*',
+  methods: ['POST', 'GET', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(express.json());
+
+app.options('*', cors());
 
 app.post('/api/chat', async (req, res) => {
   try {
@@ -20,11 +28,16 @@ app.post('/api/chat', async (req, res) => {
     const data = await response.json();
     res.json(data);
   } catch (error) {
+    console.error('Erro:', error);
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-app.get('/health', (req, res) => res.json({ status: 'ok', app: 'Evviva' }));
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', app: 'Evviva' });
+});
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Evviva backend rodando na porta ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Evviva backend rodando na porta ${PORT}`);
+});
